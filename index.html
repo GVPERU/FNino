@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Costa Peruana 2026 | Estado Climático Agrícola</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{
+  --bg:#f7f3ea;
+  --paper:#fffdf8;
+  --ink:#1f2933;
+  --muted:#69737d;
+  --line:#ded6c9;
+  --dark:#24352f;
+  --green:#496b5b;
+  --gold:#c9954a;
+  --orange:#d46a38;
+  --red:#a8422d;
+  --blue:#476d89;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  line-height:1.45;
+}
+
+.container{
+  max-width:1200px;
+  margin:0 auto;
+  padding:34px 26px 60px;
+}
+
+.hero{
+  background:linear-gradient(135deg,#23352f,#587665);
+  color:white;
+  border-radius:28px;
+  padding:42px;
+  box-shadow:0 20px 50px rgba(31,41,51,.16);
+  position:relative;
+  overflow:hidden;
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+  right:-120px;
+  top:-140px;
+}
+
+.eyebrow{
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-size:12px;
+  opacity:.82;
+  font-weight:700;
+}
+
+h1{
+  font-family: Georgia, "Times New Roman", serif;
+  font-size:52px;
+  line-height:1.02;
+  margin:12px 0 16px;
+  max-width:850px;
+}
+
+.subtitle{
+  font-size:19px;
+  max-width:860px;
+  color:rgba(255,255,255,.86);
+}
+
+.source-note{
+  margin-top:24px;
+  font-size:12px;
+  color:rgba(255,255,255,.72);
+}
+
+.grid{
+  display:grid;
+  gap:22px;
+}
+
+.kpis{
+  grid-template-columns:repeat(4,1fr);
+  margin-top:24px;
+}
+
+.card{
+  background:var(--paper);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:24px;
+  box-shadow:0 14px 35px rgba(31,41,51,.07);
+}
+
+.kpi .label{
+  color:var(--muted);
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  font-weight:700;
+}
+
+.kpi .value{
+  font-family: Georgia, "Times New Roman", serif;
+  font-size:42px;
+  margin-top:8px;
+  color:var(--dark);
+}
+
+.kpi .caption{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:6px;
+}
+
+.section{
+  margin-top:30px;
+}
+
+.section-title{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:18px;
+  margin:34px 0 16px;
+}
+
+h2{
+  font-family: Georgia, "Times New Roman", serif;
+  font-size:34px;
+  margin:0;
+  color:var(--dark);
+}
+
+.section-title p{
+  max-width:560px;
+  color:var(--muted);
+  margin:0;
+  font-size:15px;
+}
+
+.two-col{
+  grid-template-columns:1.15fr .85fr;
+}
+
+.three-col{
+  grid-template-columns:repeat(3,1fr);
+}
+
+.chart-box{
+  min-height:420px;
+}
+
+.callout{
+  border-left:6px solid var(--orange);
+  background:#fff8ef;
+}
+
+.callout strong{
+  color:var(--red);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+  overflow:hidden;
+}
+
+th{
+  text-align:right;
+  background:#efe7d9;
+  color:#3c463f;
+  padding:10px;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+}
+
+th:first-child, td:first-child{text-align:center}
+
+td{
+  text-align:right;
+  padding:9px 10px;
+  border-bottom:1px solid #eee4d5;
+}
+
+tr:nth-child(even) td{background:#fbf7ef}
+
+.badge{
+  display:inline-block;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  background:#e9ded0;
+  color:#4b3d31;
+}
+
+.zone{
+  position:relative;
+  overflow:hidden;
+}
+
+.zone h3{
+  font-family: Georgia, "Times New Roman", serif;
+  font-size:26px;
+  margin:0 0 10px;
+}
+
+.zone p{
+  color:var(--muted);
+  margin:0;
+}
+
+.zone .risk{
+  margin-top:16px;
+  height:8px;
+  border-radius:999px;
+  background:#e4dacd;
+  overflow:hidden;
+}
+
+.zone .risk span{
+  display:block;
+  height:100%;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--gold),var(--orange),var(--red));
+}
+
+ul{
+  margin:14px 0 0;
+  padding-left:20px;
+}
+
+li{margin:8px 0;color:#45505a}
+
+.big-number{
+  font-family: Georgia, "Times New Roman", serif;
+  font-size:64px;
+  color:var(--orange);
+  line-height:1;
+}
+
+.footer{
+  margin-top:34px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.print-btn{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  border:0;
+  background:var(--dark);
+  color:white;
+  padding:13px 18px;
+  border-radius:999px;
+  box-shadow:0 10px 24px rgba(0,0,0,.25);
+  cursor:pointer;
+  font-weight:700;
+}
+
+@media(max-width:900px){
+  h1{font-size:38px}
+  .kpis,.two-col,.three-col{grid-template-columns:1fr}
+  .hero{padding:30px}
+}
+
+@media print{
+  body{background:white}
+  .container{max-width:none;padding:18px}
+  .card,.hero{box-shadow:none}
+  .print-btn{display:none}
+  .section{page-break-inside:avoid}
+}
+</style>
+</head>
+
+<body>
+<button class="print-btn" onclick="window.print()">Exportar PDF</button>
+
+<div class="container">
+
+  <section class="hero">
+    <div class="eyebrow">Informe agrícola multipropósito · Corte 31/05/2026</div>
+    <h1>Costa Peruana 2026: estado térmico y señales agrícolas</h1>
+    <div class="subtitle">
+      Comparativo de temperatura máxima y mínima al cierre de la Semana ISO 22,
+      frente al promedio histórico, 2017 y 2023. Enfoque: implicancias agrícolas
+      transversales, sin análisis por cultivo específico.
+    </div>
+    <div class="source-note">
+      Nota metodológica: visualización construida con serie representativa costera agregada.
+      Debe validarse con datos observados de SENAMHI/ENFEN/ERA5 para uso técnico definitivo.
+    </div>
+  </section>
+
+  <section class="grid kpis">
+    <div class="card kpi">
+      <div class="label">Tmax semana 22 · 2026</div>
+      <div class="value">26.0°C</div>
+      <div class="caption">+1.8°C vs promedio histórico.</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Tmin semana 22 · 2026</div>
+      <div class="value">19.1°C</div>
+      <div class="caption">+2.5°C vs promedio histórico.</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Comparación térmica</div>
+      <div class="value">2023</div>
+      <div class="caption">2026 se parece más a 2023 que a 2017.</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Señal dominante</div>
+      <div class="value">Tmin</div>
+      <div class="caption">El mayor cambio está en el menor enfriamiento nocturno.</div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>1. Curvas semanales comparadas</h2>
+      <p>Serie por semana ISO: promedio anual, 2017, 2023 y 2026 hasta la semana 22. La lectura clave es la persistencia del calor fuera del verano.</p>
+    </div>
+
+    <div class="grid two-col">
+      <div class="card chart-box">
+        <canvas id="tmaxChart"></canvas>
+      </div>
+      <div class="card chart-box">
+        <canvas id="tminChart"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>2. Foto puntual: Semana ISO 22</h2>
+      <p>Comparación del momento actual de 2026 contra el mismo punto del año en promedio histórico, 2017 y 2023.</p>
+    </div>
+
+    <div class="grid two-col">
+      <div class="card">
+        <canvas id="week22Chart"></canvas>
+      </div>
+
+      <div class="card callout">
+        <span class="badge">Lectura ejecutiva</span>
+        <h2 style="font-size:28px;margin-top:14px">La anomalía más relevante está de noche</h2>
+        <p>
+          En Semana 22, 2026 está <strong>+1.8°C</strong> sobre el promedio en temperatura máxima,
+          pero <strong>+2.5°C</strong> sobre el promedio en temperatura mínima.
+        </p>
+        <p>
+          Para gestión agrícola, esto sugiere un entorno con menor recuperación nocturna,
+          mayor acumulación térmica y mayor necesidad de monitoreo operativo.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>3. Costa norte, centro y sur</h2>
+      <p>La señal cálida no se distribuye de forma homogénea. En eventos costeros, el norte suele mostrar mayor intensidad, persistencia y sensibilidad al calentamiento marino.</p>
+    </div>
+
+    <div class="grid three-col">
+      <div class="card zone">
+        <h3>Costa Norte</h3>
+        <p>Mayor exposición a anomalías cálidas. Más sensibilidad a episodios asociados al Niño Costero.</p>
+        <div class="risk"><span style="width:92%"></span></div>
+        <ul>
+          <li>Mayor intensidad térmica relativa.</li>
+          <li>Mayor persistencia de noches cálidas.</li>
+          <li>Más presión sobre riego, sanidad y operación.</li>
+        </ul>
+      </div>
+
+      <div class="card zone">
+        <h3>Costa Centro</h3>
+        <p>Comportamiento cálido sostenido, con señal clara en mínimas nocturnas.</p>
+        <div class="risk"><span style="width:72%"></span></div>
+        <ul>
+          <li>Mayor sensación de otoño cálido.</li>
+          <li>Menor amplitud térmica día/noche.</li>
+          <li>Riesgo operativo moderado-alto.</li>
+        </ul>
+      </div>
+
+      <div class="card zone">
+        <h3>Costa Sur</h3>
+        <p>Impacto relativamente más amortiguado por influencia oceánica fría, pero no inmune.</p>
+        <div class="risk"><span style="width:52%"></span></div>
+        <ul>
+          <li>Anomalías positivas más moderadas.</li>
+          <li>Mayor variabilidad local.</li>
+          <li>Requiere monitoreo específico por valle.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>4. Tabla semanal hasta Semana 22</h2>
+      <p>Valores de referencia usados para la visualización. La tabla permite comparar el avance térmico semana por semana.</p>
+    </div>
+
+    <div class="card" style="overflow-x:auto">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>Sem</th>
+            <th>Tmax Prom.</th>
+            <th>Tmax 2017</th>
+            <th>Tmax 2023</th>
+            <th>Tmax 2026</th>
+            <th>Tmin Prom.</th>
+            <th>Tmin 2017</th>
+            <th>Tmin 2023</th>
+            <th>Tmin 2026</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="section-title">
+      <h2>5. Implicancias agrícolas transversales</h2>
+      <p>No se trata solamente de “más calor”. El punto agrícola central es la combinación de mayor temperatura base, menor enfriamiento nocturno y persistencia fuera del verano.</p>
+    </div>
+
+    <div class="grid three-col">
+      <div class="card">
+        <div class="big-number">01</div>
+        <h3>Agua y riego</h3>
+        <ul>
+          <li>Mayor evapotranspiración acumulada.</li>
+          <li>Mayor presión sobre programación de riego.</li>
+          <li>Menor margen para errores operativos.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="big-number">02</div>
+        <h3>Sanidad y monitoreo</h3>
+        <ul>
+          <li>Mayor necesidad de vigilancia preventiva.</li>
+          <li>Riesgo de ciclos biológicos más activos.</li>
+          <li>Mayor valor de alertas tempranas.</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <div class="big-number">03</div>
+        <h3>Gestión operativa</h3>
+        <ul>
+          <li>Calendarios menos confiables como única guía.</li>
+          <li>Necesidad de decisiones basadas en datos reales.</li>
+          <li>Mayor relevancia de dashboards climáticos.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid two-col" style="margin-top:22px">
+      <div class="card">
+        <h3>Variables críticas a monitorear</h3>
+        <ul>
+          <li>Temperatura mínima nocturna.</li>
+          <li>Humedad relativa nocturna.</li>
+          <li>Temperatura superficial del mar.</li>
+          <li>Duración de eventos cálidos.</li>
+          <li>Acumulación térmica semanal.</li>
+          <li>Déficit de presión de vapor.</li>
+        </ul>
+      </div>
+
+      <div class="card callout">
+        <h3>Conclusión ejecutiva</h3>
+        <p>
+          Al cierre de mayo 2026, la costa peruana opera bajo un régimen térmico
+          significativamente más cálido que su comportamiento histórico.
+        </p>
+        <p>
+          Para el agro, el principal riesgo no es un evento aislado de calor,
+          sino la persistencia de un entorno térmico más alto durante una mayor
+          proporción del año.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    Fuentes recomendadas para validación final: SENAMHI, ENFEN, IMARPE, NOAA, Copernicus/ERA5.
+    Este material está diseñado como informe visual ejecutivo; las cifras deben reemplazarse por observaciones oficiales si se usará como documento técnico formal.
+  </div>
+
+</div>
+
+<script>
+const weeks = Array.from({length:22},(_,i)=>i+1);
+
+const tmaxAvg = [27.7,28.0,28.3,28.5,28.7,28.9,29.0,29.1,29.1,29.0,28.9,28.7,28.5,28.2,27.9,27.5,27.0,26.5,26.0,25.4,24.8,24.2];
+const tmax2017 = [28.4,28.9,29.4,29.9,30.4,30.8,31.2,31.5,31.8,31.9,31.8,31.6,31.3,30.8,30.2,29.5,28.7,27.8,26.9,25.9,25.0,24.2];
+const tmax2023 = [28.5,29.0,29.5,29.9,30.3,30.6,30.8,31.0,31.1,31.1,31.1,31.0,30.9,30.7,30.4,30.0,29.6,29.1,28.5,27.9,27.3,26.6];
+const tmax2026 = [28.9,29.4,29.9,30.3,30.7,31.0,31.2,31.3,31.4,31.3,31.2,31.0,30.8,30.5,30.1,29.7,29.2,28.7,28.1,27.4,26.7,26.0];
+
+const tminAvg = [19.8,20.1,20.4,20.6,20.8,20.9,21.0,21.1,21.1,21.0,20.9,20.7,20.5,20.2,19.9,19.5,19.1,18.6,18.1,17.6,17.1,16.6];
+const tmin2017 = [20.5,20.9,21.4,21.9,22.3,22.7,23.0,23.2,23.3,23.3,23.2,23.0,22.8,22.4,22.0,21.4,20.8,20.1,19.3,18.5,17.7,17.0];
+const tmin2023 = [21.0,21.4,21.8,22.2,22.6,22.9,23.2,23.4,23.5,23.6,23.6,23.5,23.3,23.0,22.7,22.3,21.9,21.5,20.9,20.4,19.8,19.9];
+const tmin2026 = [21.5,21.9,22.4,22.8,23.1,23.4,23.6,23.7,23.8,23.7,23.6,23.5,23.3,23.0,22.6,22.2,21.8,21.3,20.7,20.1,19.6,19.1];
+
+const colors = {
+  avg:"#496b5b",
+  y2017:"#476d89",
+  y2023:"#a8422d",
+  y2026:"#d46a38"
+};
+
+function lineChart(id, title, datasets){
+  new Chart(document.getElementById(id),{
+    type:"line",
+    data:{
+      labels:weeks,
+      datasets:datasets
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{position:"bottom"},
+        title:{display:true,text:title,font:{size:17,weight:"bold"}}
+      },
+      scales:{
+        x:{title:{display:true,text:"Semana ISO"}},
+        y:{title:{display:true,text:"°C"},grid:{color:"rgba(0,0,0,.08)"}}
+      },
+      elements:{
+        point:{radius:2},
+        line:{tension:.32,borderWidth:3}
+      }
+    }
+  });
+}
+
+lineChart("tmaxChart","Temperatura máxima semanal · Costa peruana",[
+  {label:"Promedio",data:tmaxAvg,borderColor:colors.avg,backgroundColor:colors.avg},
+  {label:"2017",data:tmax2017,borderColor:colors.y2017,backgroundColor:colors.y2017},
+  {label:"2023",data:tmax2023,borderColor:colors.y2023,backgroundColor:colors.y2023},
+  {label:"2026 hasta 31/05",data:tmax2026,borderColor:colors.y2026,backgroundColor:colors.y2026}
+]);
+
+lineChart("tminChart","Temperatura mínima semanal · Costa peruana",[
+  {label:"Promedio",data:tminAvg,borderColor:colors.avg,backgroundColor:colors.avg},
+  {label:"2017",data:tmin2017,borderColor:colors.y2017,backgroundColor:colors.y2017},
+  {label:"2023",data:tmin2023,borderColor:colors.y2023,backgroundColor:colors.y2023},
+  {label:"2026 hasta 31/05",data:tmin2026,borderColor:colors.y2026,backgroundColor:colors.y2026}
+]);
+
+new Chart(document.getElementById("week22Chart"),{
+  type:"bar",
+  data:{
+    labels:["Promedio","2017","2023","2026"],
+    datasets:[
+      {label:"Tmax Semana 22",data:[24.2,24.2,26.6,26.0],backgroundColor:"#d46a38"},
+      {label:"Tmin Semana 22",data:[16.6,17.0,19.9,19.1],backgroundColor:"#476d89"}
+    ]
+  },
+  options:{
+    responsive:true,
+    maintainAspectRatio:false,
+    plugins:{
+      legend:{position:"bottom"},
+      title:{display:true,text:"Semana ISO 22: comparación puntual",font:{size:17,weight:"bold"}}
+    },
+    scales:{
+      y:{title:{display:true,text:"°C"},grid:{color:"rgba(0,0,0,.08)"}}
+    }
+  }
+});
+
+const tbody = document.querySelector("#dataTable tbody");
+for(let i=0;i<weeks.length;i++){
+  const tr = document.createElement("tr");
+  const row = [
+    weeks[i],
+    tmaxAvg[i], tmax2017[i], tmax2023[i], tmax2026[i],
+    tminAvg[i], tmin2017[i], tmin2023[i], tmin2026[i]
+  ];
+  row.forEach((v,idx)=>{
+    const td=document.createElement("td");
+    td.textContent = idx===0 ? v : v.toFixed(1);
+    tr.appendChild(td);
+  });
+  tbody.appendChild(tr);
+}
+</script>
+
+</body>
+</html>
